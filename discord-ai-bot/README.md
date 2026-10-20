@@ -9,14 +9,20 @@
 - 在勾選頻道收到新訊息後，先由模型生成完整答案，再用 Discord **原生 Reply** 一次發送；不會先送出「思考中…」暫存訊息。
 - 初次回覆時由 Discord API 即時抓取頻道最近 50 則訊息當作上下文（可在後台改為 0–100）；**不會回覆歷史訊息**。各頻道／討論串分開使用上下文。
 - 同一頻道多人連發時採 **2.5 秒短暫等待**：新訊息取代舊訊息，只針對最新一則發言生成並回覆。若推論時又有人發言，丟棄已過時的回答；頻道／討論串各自獨立。
-- Ollama Qwen3.5-35B-A3B 或 9B，關閉 Thinking，預設 `num_ctx=8192`；固定角色「獠牙」是一匹兇悍毒舌的黑狼，使用台灣繁體中文說話，遇到實際問題仍認真回答。
+- Ollama Qwen3.5-35B-A3B 或 9B，關閉 Thinking，預設 `num_ctx=8192`；角色「獠牙」保留黑狼設定，但在群聊以自然短句、冷幽默和適量吐槽為主，不用誇張的中二台詞。
+- 模型輸出經 `opencc-python-reimplemented` 的 `s2twp` 轉為**台灣繁體中文**，並保留 Markdown 程式碼區塊、行內程式碼與網址原文；即使模型偶爾使用簡體也會轉換。
 - 管理員後台的伺服器清單使用預設收合的抽屜式面板，點選伺服器名稱才展開頻道和設定。
 - 管理員 Basic Auth 密碼、127.0.0.1 本機限定的後台、SSH 轉發、Bot/其他機器人訊息過濾、10 秒冷卻、單 GPU 併發鎖。
 - 設定存在 `data/settings.json`，重新啟動仍保留；`.env`、`.venv`、`data/` 在 `.gitignore`。
 
 ## 伺服器（目前環境 Ubuntu WSL2）
 
-假設使用者已經安裝 `uv`、建立 `~/discord-ai-bot/.venv`，且 `discord.py fastapi uvicorn` 已安裝：
+假設使用者已經安裝 `uv`、建立 `~/discord-ai-bot/.venv`，且 `discord.py fastapi uvicorn` 已安裝。**本版額外需要在專案虛擬環境安裝 OpenCC（不用 sudo、不影響全域 Python）**：
+
+```bash
+~/discord-ai-bot/.tools/bin/uv pip install --python ~/discord-ai-bot/.venv/bin/python opencc-python-reimplemented
+```
+
 
 1. 取得程式碼放入 `~/discord-ai-bot/`，並保留原來的 `.env`、`.venv` 和 `.tools`；請勿覆蓋 `.env`。
 2. `.env` 內容（敏感資訊不得 commit）：
